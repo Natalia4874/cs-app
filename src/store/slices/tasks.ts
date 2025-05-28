@@ -17,24 +17,24 @@ export const tasksSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTodo.pending, (state) => {
-        console.log('fetchTodo.pending')
+      .addCase(fetchTasks.pending, (state) => {
+        console.log('fetchTasks.pending')
         state.loading = true
         state.error = null
       })
-      .addCase(fetchTodo.fulfilled, (state, action: PayloadAction<iTask[]>) => {
+      .addCase(fetchTasks.fulfilled, (state, action: PayloadAction<iTask[]>) => {
         state.loading = false
         state.tasks = action.payload
       })
-      .addCase(fetchTodo.rejected, (state, action) => {
+      .addCase(fetchTasks.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || 'Something went wrong'
       })
   }
 })
 
-export const fetchTodo = createAsyncThunk('tasks/fetchTodo', async () => {
-  const response = await fetch(`${API_BASE_URL}/todos`)
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+  const response = await fetch(`${API_BASE_URL}/tasks`)
 
   if (!response.ok) throw new Error('Failed to fetch')
 

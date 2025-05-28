@@ -7,7 +7,7 @@ interface TaskItemProps {
   item: iTask
 }
 
-interface TodoCellProps {
+interface TaskCellProps {
   center?: boolean
 }
 
@@ -15,21 +15,21 @@ export const TaskItem = ({ item }: TaskItemProps) => {
   return (
     <>
       <Divider />
-      <Todo>
-        <TodoCell>{item.title}</TodoCell>
-        {item.description && <TodoCell>{item.description}</TodoCell>}
-        <TodoCell center>28.05.</TodoCell>
-        <TodoCell center>{item.status}</TodoCell>
-        <TodoCell center>
+      <Task>
+        <TaskCell>{item.title}</TaskCell>
+        {item.description && <TaskCell>{item.description}</TaskCell>}
+        <TaskCell center>28.05.</TaskCell>
+        <TaskCell center>{item.status}</TaskCell>
+        <TaskCell center>
           <Button>Edit</Button>
           <Button>Delete</Button>
-        </TodoCell>
-      </Todo>
+        </TaskCell>
+      </Task>
     </>
   )
 }
 
-const Todo = styled.li({
+const Task = styled.li({
   display: 'grid',
   padding: '12px 8px',
   alignItems: 'center',
@@ -37,7 +37,7 @@ const Todo = styled.li({
   columnGap: '16px',
   gridTemplateColumns: '120px 1fr 120px 120px 200px'
 })
-const TodoCell = styled.div<TodoCellProps>(({ center }) => ({
+const TaskCell = styled.div<TaskCellProps>(({ center }) => ({
   color: '#000',
   display: 'flex',
   gap: '16px',

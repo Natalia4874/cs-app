@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import type { AppDispatch, RootState } from '../store'
-import { fetchTodo } from '../store/slices/tasks'
+import { fetchTasks } from '../store/slices/tasks'
 import { FilterIcon, SortAscIcon, SortDefaultIcon, SortDescIcon } from './Icons'
 import { TaskItem } from './TaskItem'
 
@@ -19,7 +19,7 @@ const TasksList = () => {
   } | null>(null)
 
   useEffect(() => {
-    dispatch(fetchTodo())
+    dispatch(fetchTasks())
   }, [dispatch])
 
   const requestSort = (key: 'title') => {
