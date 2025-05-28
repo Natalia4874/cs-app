@@ -8,25 +8,35 @@ import { fetchTasks } from '../store/slices/tasks'
 import { FilterIcon, SortAscIcon, SortDefaultIcon, SortDescIcon } from './Icons'
 import { TaskItem } from './TaskItem'
 
+type SortableField = 'title' | 'date' | 'status'
+type SortDirection = 'ascending' | 'descending'
+
+interface SortConfig {
+  key: SortableField
+  direction: SortDirection
+}
+
 const TasksList = () => {
   const tasks = useSelector((state: RootState) => state.tasks.tasks)
   const loading = useSelector((state: RootState) => state.tasks.loading)
   const error = useSelector((state: RootState) => state.tasks.error)
   const dispatch = useDispatch<AppDispatch>()
-  const [sortConfig, setSortConfig] = useState<{
-    key: 'title'
-    direction: 'ascending' | 'descending'
-  } | null>(null)
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>({
+    key: 'date',
+    direction: 'descending'
+  })
 
   useEffect(() => {
     dispatch(fetchTasks())
   }, [dispatch])
 
-  const requestSort = (key: 'title') => {
-    let direction: 'ascending' | 'descending' = 'ascending'
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending'
+  const requestSort = (key: SortableField) => {
+    let direction: SortDirection = 'ascending'
+
+    if (sortConfig?.key === key) {
+      direction = sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
     }
+
     setSortConfig({ key, direction })
   }
 
@@ -34,6 +44,13 @@ const TasksList = () => {
     if (!sortConfig) return tasks
 
     return [...tasks].sort((a, b) => {
+      if (sortConfig.key === 'date') {
+        const dateA = new Date(a.date).getTime()
+        const dateB = new Date(b.date).getTime()
+
+        return sortConfig.direction === 'ascending' ? dateA - dateB : dateB - dateA
+      }
+
       if (a[sortConfig.key] < b[sortConfig.key]) {
         return sortConfig.direction === 'ascending' ? -1 : 1
       }
@@ -58,20 +75,17 @@ const TasksList = () => {
       <Headers>
         <HeaderCell onClick={() => requestSort('title')} active={sortConfig?.key === 'title'}>
           Title
-          {sortConfig?.key === 'title' ? (
-            sortConfig.direction === 'ascending' ? (
-              <SortAscIcon />
-            ) : (
-              <SortDescIcon />
-            )
-          ) : (
-            <SortDefaultIcon />
-          )}
-          <FilterIcon />
+          {renderSortIcon('title')}
         </HeaderCell>
         <HeaderCell>Description</HeaderCell>
-        <HeaderCell>Created</HeaderCell>
-        <HeaderCell>Status</HeaderCell>
+        <HeaderCell onClick={() => requestSort('date')} active={sortConfig?.key === 'date'}>
+          Created
+          {renderSortIcon('date')}
+        </HeaderCell>
+        <HeaderCell>
+          Status
+          <FilterIcon />
+        </HeaderCell>
         <HeaderCell>Manage</HeaderCell>
       </Headers>
       <List>
@@ -81,6 +95,12 @@ const TasksList = () => {
       </List>
     </Container>
   )
+
+  function renderSortIcon(field: SortableField) {
+    if (sortConfig?.key !== field) return <SortDefaultIcon />
+
+    return sortConfig.direction === 'ascending' ? <SortAscIcon /> : <SortDescIcon />
+  }
 }
 
 export default TasksList
@@ -88,8 +108,7 @@ export default TasksList
 const Container = styled.div({
   display: 'flex',
   flexDirection: 'column',
-  padding: '40px',
-  backgroundColor: '#fff'
+  padding: '40px'
 })
 const Title = styled.h2({
   fontSize: 24,

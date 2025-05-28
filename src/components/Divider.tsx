@@ -1,6 +1,6 @@
 import React from 'react'
 
-interface DividerProps {
+interface iDividerProps {
   orientation?: 'horizontal' | 'vertical'
   className?: string
   color?: string
@@ -8,7 +8,7 @@ interface DividerProps {
   margin?: string
 }
 
-const Divider: React.FC<DividerProps> = ({
+const Divider: React.FC<iDividerProps> = ({
   orientation = 'horizontal',
   className = '',
   color = '#ccc',

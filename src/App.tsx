@@ -4,9 +4,12 @@ import TasksList from './components/TasksList'
 
 import './App.css'
 
+import TaskForm from './forms/TaskForm'
+
 function App() {
   return (
     <Container>
+      <TaskForm />
       <TasksList />
     </Container>
   )
@@ -14,4 +17,10 @@ function App() {
 
 export default App
 
-const Container = styled.div({})
+const Container = styled.div({
+  padding: 40,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 24,
+  backgroundColor: '#fff'
+})

@@ -14,11 +14,23 @@ const initialState: iTasksState = {
 export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
-  reducers: {},
+  reducers: {
+    addTask: (state, action: PayloadAction<iTask>) => {
+      state.tasks.push(action.payload)
+    },
+    removeTask: (state, action: PayloadAction<string>) => {
+      return state.tasks.filter((task) => task.id !== action.payload)
+    },
+    updateTask: (state, action: PayloadAction<iTask>) => {
+      const index = state.tasks.findIndex((t) => t.id === action.payload.id)
+      if (index !== -1) {
+        state.tasks[index] = action.payload
+      }
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTasks.pending, (state) => {
-        console.log('fetchTasks.pending')
         state.loading = true
         state.error = null
       })
@@ -38,18 +50,18 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
 
   if (!response.ok) throw new Error('Failed to fetch')
 
-  return await response.json()
-  // const data = await response.json()
+  const data = await response.json()
 
-  // return data.map((task: iTask) => ({
-  //   id: task.id,
-  //   title: task.title,
-  //   description: '',
-  //   status: task.completed ? 'completed' : 'to do',
-  //   date: new Date(),
-  //   completed: false
-  // }))
+  return data.map((task: iTask) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    // status: task.completed ? 'completed' : 'to do',
+    status: task.status,
+    date: task.date,
+    completed: false
+  }))
 })
 
-export const {} = tasksSlice.actions
+export const { addTask, removeTask, updateTask } = tasksSlice.actions
 export default tasksSlice.reducer
