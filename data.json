@@ -1,0 +1,32 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "title": "Code",
+      "description": "Write some code for an app",
+      "status": "to do",
+      "date": "string"
+    },
+    {
+      "id": 2,
+      "title": "Eat",
+      "description": "Healthy food",
+      "status": "to do",
+      "date": "string"
+    },
+    {
+      "id": 3,
+      "title": "Sleep",
+      "description": "Sweet dreams",
+      "status": "to do",
+      "date": "string"
+    },
+    {
+      "id": 4,
+      "title": "Repeat",
+      "description": "Here we go again",
+      "status": "to do",
+      "date": "string"
+    }
+  ]
+}
