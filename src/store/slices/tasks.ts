@@ -21,11 +21,10 @@ export const tasksSlice = createSlice({
     removeTask: (state, action: PayloadAction<string>) => {
       return state.tasks.filter((task) => task.id !== action.payload)
     },
-    updateTask: (state, action: PayloadAction<iTask>) => {
-      const index = state.tasks.findIndex((t) => t.id === action.payload.id)
-      if (index !== -1) {
-        state.tasks[index] = action.payload
-      }
+    editTask: (state, action: PayloadAction<iTask>) => {
+      state.tasks = state.tasks.map((task) =>
+        task.id === action.payload.id ? action.payload : task
+      )
     }
   },
   extraReducers: (builder) => {
@@ -58,10 +57,9 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
     description: task.description,
     // status: task.completed ? 'completed' : 'to do',
     status: task.status,
-    date: task.date,
-    completed: false
+    date: task.date
   }))
 })
 
-export const { addTask, removeTask, updateTask } = tasksSlice.actions
+export const { addTask, removeTask, editTask } = tasksSlice.actions
 export default tasksSlice.reducer

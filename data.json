@@ -1,32 +1,32 @@
 {
   "tasks": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Code",
       "description": "Write some code for an app",
-      "status": "to do",
-      "date": "string"
+      "status": "To Do",
+      "date": "2025-05-24"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Eat",
       "description": "Healthy food",
-      "status": "to do",
-      "date": "string"
+      "status": "To Do",
+      "date": "2025-05-27"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "Sleep",
       "description": "Sweet dreams",
-      "status": "to do",
-      "date": "string"
+      "status": "To Do",
+      "date": "2025-05-25"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "Repeat",
       "description": "Here we go again",
-      "status": "to do",
-      "date": "string"
+      "status": "To Do",
+      "date": "2025-04-28"
     }
   ]
 }

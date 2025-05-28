@@ -8,11 +8,13 @@ import { v4 as uuidv4 } from 'uuid'
 import * as yup from 'yup'
 
 import type { iTask } from '../interfaces'
-import { addTask, removeTask, updateTask } from '../store/slices/tasks'
+import { addTask, editTask, removeTask } from '../store/slices/tasks'
 
 type iTaskFormProps = {
   initialData?: iTask
   onSuccess?: () => void
+  onCancel?: () => void
+  onSubmit: (data: iTask) => void
 }
 
 const schema = yup.object().shape({
@@ -21,7 +23,7 @@ const schema = yup.object().shape({
   status: yup.string().required('Status is required')
 })
 
-const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
+const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps) => {
   const dispatch = useDispatch()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const isEditMode = !!initialData
@@ -31,9 +33,8 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setError,
-    setValue
-  } = useForm({
+    setError
+  } = useForm<iTask>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: initialData || {
@@ -43,7 +44,7 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
     }
   })
 
-  const onSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: iTask) => {
     try {
       setSubmitError(null)
 
@@ -54,7 +55,7 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
       }
 
       if (isEditMode) {
-        dispatch(updateTask(taskData))
+        dispatch(editTask(taskData))
       } else {
         dispatch(addTask(taskData))
       }
@@ -74,7 +75,7 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
 
       if (!response.ok) {
         if (isEditMode && initialData) {
-          dispatch(updateTask(initialData))
+          dispatch(editTask(initialData))
         } else {
           dispatch(removeTask(taskData.id))
         }
@@ -91,6 +92,8 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
         return
       }
 
+      onSubmit(taskData)
+
       reset()
 
       onSuccess?.()
@@ -101,14 +104,12 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
 
   return (
     <Container>
-      {submitError && <div className="form__error">{submitError}</div>}
+      {submitError && <div>{submitError}</div>}
 
-      <Form className="form" onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(handleFormSubmit)}>
         <FormTitle>{isEditMode ? 'Edit Task' : 'Add New Task'}</FormTitle>
         <FormInput id="title" type="text" {...register('title')} placeholder="Task Name" />
-        {errors.title && (
-          <ErrorMessage className="form__error">{errors.title.message}</ErrorMessage>
-        )}
+        {errors.title && <ErrorMessage>{errors.title.message}</ErrorMessage>}
 
         <FormTextarea
           id="description"
@@ -116,9 +117,7 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
           placeholder="Task Description"
           rows={3}
         />
-        {errors.description && (
-          <ErrorMessage className="form__error">{errors.description.message}</ErrorMessage>
-        )}
+        {errors.description && <ErrorMessage>{errors.description.message}</ErrorMessage>}
 
         <FormSelect
           id="status"
@@ -129,26 +128,20 @@ const TaskForm = ({ initialData, onSuccess }: iTaskFormProps) => {
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
         </FormSelect>
-        {errors.status && (
-          <ErrorMessage className="form__error">{errors.status.message}</ErrorMessage>
-        )}
+        {errors.status && <ErrorMessage>{errors.status.message}</ErrorMessage>}
 
-        <FormButtons>
-          <Button className="form__btn" type="submit" disabled={isSubmitting}>
-            {isSubmitting
-              ? isEditMode
-                ? 'Saving...'
-                : 'Adding...'
-              : isEditMode
-                ? 'Save Changes'
-                : 'Add Task'}
-          </Button>
-          {isEditMode && (
-            <Button className="form__btn" type="submit">
+        {isEditMode ? (
+          <FormButtons>
+            <Button type="submit">Save Changes</Button>
+            <Button type="button" onClick={onCancel}>
               Cancel
             </Button>
-          )}
-        </FormButtons>
+          </FormButtons>
+        ) : (
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Adding...' : 'Add Task'}
+          </Button>
+        )}
       </Form>
     </Container>
   )
