@@ -1,45 +1,47 @@
 import React from 'react'
 
+import styled from 'styled-components'
+
 interface iDividerProps {
   orientation?: 'horizontal' | 'vertical'
-  className?: string
   color?: string
-  thickness?: number
+  thickness?: string
   margin?: string
 }
 
 const Divider: React.FC<iDividerProps> = ({
   orientation = 'horizontal',
-  className = '',
   color = '#ccc',
-  thickness = 1,
-  margin = 0
+  thickness = '1px',
+  margin = '0',
+  ...props
 }) => {
-  const style: React.CSSProperties = {
-    backgroundColor: color,
-    margin
-  }
-
-  if (orientation === 'horizontal') {
-    return (
-      <div
-        className={`divider ${className}`}
-        style={{ height: thickness, width: '100%', ...style }}
-      />
-    )
-  }
-
   return (
-    <div
-      className={`divider ${className}`}
-      style={{
-        display: 'inline-block',
-        width: thickness,
-        height: '100%',
-        ...style
-      }}
+    <StyledDivider
+      orientation={orientation}
+      color={color}
+      thickness={thickness}
+      margin={margin}
+      {...props}
     />
   )
 }
 
 export default Divider
+
+const StyledDivider = styled.div<iDividerProps>`
+  background-color: ${({ color }) => color || '#ccc'};
+  margin: ${({ margin }) => margin || '0'};
+
+  ${({ orientation, thickness }) =>
+    orientation === 'horizontal'
+      ? `
+          height: ${thickness || '1px'};
+          width: 100%;
+        `
+      : `
+          display: inline-block;
+          width: ${thickness || '1px'};
+          height: 100%;
+        `}
+`
