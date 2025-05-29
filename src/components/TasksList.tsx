@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
+import type { iTask } from '../interfaces'
 import type { AppDispatch, RootState } from '../store'
 import { fetchTasks } from '../store/slices/tasks'
 import { FilterIcon, SortAscIcon, SortDefaultIcon, SortDescIcon } from './Icons'
-import { TaskItem } from './TaskItem'
+import TaskItem from './TaskItem'
 
 type SortableField = 'date'
 type SortDirection = 'ascending' | 'descending'
@@ -16,7 +17,13 @@ interface SortConfig {
   direction: SortDirection
 }
 
+interface HeaderCellProps {
+  active?: boolean
+}
+
 type StatusFilter = 'All' | 'To Do' | 'In Progress' | 'Completed'
+
+const STATUS_FILTERS: StatusFilter[] = ['All', 'To Do', 'In Progress', 'Completed']
 
 const TasksList = () => {
   const tasks = useSelector((state: RootState) => state.tasks.tasks)
@@ -45,17 +52,17 @@ const TasksList = () => {
   }
 
   const filteredAndSortedTasks = useMemo(() => {
-    let filteredTasks = tasks
+    let filteredTasks = tasks as iTask[]
     if (statusFilter !== 'All') {
       filteredTasks = tasks.filter((task) => task.status === statusFilter)
     }
 
     if (!sortConfig) return filteredTasks
 
-    return [...filteredTasks].sort((a, b) => {
+    return [...filteredTasks].sort((a: iTask, b: iTask) => {
       if (sortConfig.key === 'date') {
-        const dateA = new Date(a.date).getTime()
-        const dateB = new Date(b.date).getTime()
+        const dateA = a.date ? new Date(a.date).getTime() : 0
+        const dateB = b.date ? new Date(b.date).getTime() : 0
 
         return sortConfig.direction === 'ascending' ? dateA - dateB : dateB - dateA
       }
@@ -99,7 +106,7 @@ const TasksList = () => {
             </FilterButton>
             {showStatusFilter && (
               <StatusDropdown>
-                {(['All', 'To Do', 'In Progress', 'Completed'] as StatusFilter[]).map((status) => (
+                {STATUS_FILTERS.map((status) => (
                   <StatusOption
                     key={status}
                     onClick={() => handleStatusFilterChange(status)}
@@ -123,7 +130,7 @@ const TasksList = () => {
   )
 
   function renderSortIcon(field: SortableField) {
-    if (sortConfig?.key !== field) return <SortDefaultIcon />
+    if (!sortConfig || sortConfig.key !== field) return <SortDefaultIcon />
 
     return sortConfig.direction === 'ascending' ? <SortAscIcon /> : <SortDescIcon />
   }
@@ -150,7 +157,7 @@ const Headers = styled.div({
   columnGap: '16px',
   gridTemplateColumns: '120px 1fr 120px 120px 200px'
 })
-const HeaderCell = styled.div<{ active?: boolean }>`
+const HeaderCell = styled.div<HeaderCellProps>`
   color: #ccc;
   display: flex;
   justify-content: center;

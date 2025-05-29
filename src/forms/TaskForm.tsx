@@ -19,14 +19,20 @@ type iTaskFormProps = {
 
 const schema = yup.object().shape({
   title: yup.string().required('Task name is required').min(3).max(100),
-  description: yup.string().max(500),
-  status: yup.string().required('Status is required')
+  description: yup.string().max(500).optional(),
+  status: yup.string().required('Status is required').oneOf(['To Do', 'In Progress', 'Completed'])
 })
 
 const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps) => {
   const dispatch = useDispatch()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const isEditMode = !!initialData
+
+  const defaultValues = initialData || {
+    title: '',
+    description: '',
+    status: 'To Do'
+  }
 
   const {
     register,
@@ -37,11 +43,7 @@ const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps
   } = useForm<iTask>({
     resolver: yupResolver(schema),
     mode: 'onChange',
-    defaultValues: initialData || {
-      title: '',
-      description: '',
-      status: 'To Do'
-    }
+    defaultValues
   })
 
   const handleFormSubmit = async (data: iTask) => {
@@ -84,7 +86,9 @@ const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps
 
         if (errorData.errors) {
           Object.entries(errorData.errors).forEach(([field, message]) => {
-            setError(field, { type: 'server', message })
+            if (field in schema.fields) {
+              setError(field as keyof iTask, { type: 'server', message: String(message) })
+            }
           })
         } else {
           setSubmitError(errorData.message || 'Submission failed')
@@ -98,11 +102,12 @@ const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps
         title: '',
         description: '',
         status: 'To Do'
-      })
+      } as Partial<iTask>)
 
       onSuccess?.()
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Failed to add task')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add task'
+      setSubmitError(errorMessage)
     }
   }
 

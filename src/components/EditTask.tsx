@@ -5,6 +5,7 @@ import styled from 'styled-components'
 
 import TaskForm from '../forms/TaskForm'
 import type { iTask } from '../interfaces'
+import type { AppDispatch } from '../store'
 import { editTask, removeTask } from '../store/slices/tasks'
 
 type iEditTaskProps = {
@@ -13,7 +14,7 @@ type iEditTaskProps = {
 
 const EditTask = ({ task }: iEditTaskProps) => {
   const [isEdit, setIsEdit] = useState(false)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   const handleEdit = () => {
     setIsEdit(true)
@@ -41,13 +42,17 @@ const EditTask = ({ task }: iEditTaskProps) => {
 
         dispatch(removeTask(task.id))
       } catch (error) {
-        console.error('Error deleting task:', error)
+        if (error instanceof Error) {
+          console.error('Error deleting task:', error.message)
+        } else {
+          console.error('Unknown error:', error)
+        }
       }
     }
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <Container>
       {isEdit && (
         <FormWrapper>
           <TaskForm initialData={task} onCancel={handleCancel} onSubmit={handleSubmit} />
@@ -57,12 +62,13 @@ const EditTask = ({ task }: iEditTaskProps) => {
         <Button onClick={handleEdit}>Edit</Button>
         <Button onClick={handleDelete}>Delete</Button>
       </ButtonWrapper>
-    </div>
+    </Container>
   )
 }
 
 export default EditTask
 
+const Container = styled.div({ position: 'relative' })
 const FormWrapper = styled.div({
   position: 'absolute',
   zIndex: 3,

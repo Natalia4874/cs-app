@@ -8,7 +8,7 @@ type iTaskItemProps = {
   item: iTask
 }
 
-export const TaskItem = ({ item }: iTaskItemProps) => {
+const TaskItem = ({ item }: iTaskItemProps) => {
   return (
     <>
       <Divider />
@@ -24,6 +24,8 @@ export const TaskItem = ({ item }: iTaskItemProps) => {
     </>
   )
 }
+
+export default TaskItem
 
 const Task = styled.li({
   display: 'grid',
