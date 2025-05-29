@@ -55,7 +55,6 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
     id: task.id,
     title: task.title,
     description: task.description,
-    // status: task.completed ? 'completed' : 'to do',
     status: task.status,
     date: task.date
   }))

@@ -4,21 +4,21 @@
       "id": "1",
       "title": "Code",
       "description": "Write some code for an app",
-      "status": "To Do",
+      "status": "Completed",
       "date": "2025-05-24"
     },
     {
       "id": "2",
       "title": "Eat",
       "description": "Healthy food",
-      "status": "To Do",
+      "status": "In Progress",
       "date": "2025-05-27"
     },
     {
       "id": "3",
       "title": "Sleep",
       "description": "Sweet dreams",
-      "status": "To Do",
+      "status": "Completed",
       "date": "2025-05-25"
     },
     {

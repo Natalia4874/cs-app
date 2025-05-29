@@ -16,6 +16,8 @@ interface SortConfig {
   direction: SortDirection
 }
 
+type StatusFilter = 'All' | 'To Do' | 'In Progress' | 'Completed'
+
 const TasksList = () => {
   const tasks = useSelector((state: RootState) => state.tasks.tasks)
   const loading = useSelector((state: RootState) => state.tasks.loading)
@@ -25,6 +27,8 @@ const TasksList = () => {
     key: 'date',
     direction: 'descending'
   })
+  const [showStatusFilter, setShowStatusFilter] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All')
 
   useEffect(() => {
     dispatch(fetchTasks())
@@ -40,10 +44,15 @@ const TasksList = () => {
     setSortConfig({ key, direction })
   }
 
-  const sortedTasks = useMemo(() => {
-    if (!sortConfig) return tasks
+  const filteredAndSortedTasks = useMemo(() => {
+    let filteredTasks = tasks
+    if (statusFilter !== 'All') {
+      filteredTasks = tasks.filter((task) => task.status === statusFilter)
+    }
 
-    return [...tasks].sort((a, b) => {
+    if (!sortConfig) return filteredTasks
+
+    return [...filteredTasks].sort((a, b) => {
       if (sortConfig.key === 'date') {
         const dateA = new Date(a.date).getTime()
         const dateB = new Date(b.date).getTime()
@@ -51,15 +60,18 @@ const TasksList = () => {
         return sortConfig.direction === 'ascending' ? dateA - dateB : dateB - dateA
       }
 
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? -1 : 1
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? 1 : -1
-      }
       return 0
     })
-  }, [tasks, sortConfig])
+  }, [tasks, sortConfig, statusFilter])
+
+  const toggleStatusFilter = () => {
+    setShowStatusFilter((prev) => !prev)
+  }
+
+  const handleStatusFilterChange = (filter: StatusFilter) => {
+    setStatusFilter(filter)
+    setShowStatusFilter(false)
+  }
 
   if (loading) {
     return <div>Loading...</div>
@@ -80,13 +92,30 @@ const TasksList = () => {
           {renderSortIcon('date')}
         </HeaderCell>
         <HeaderCell>
-          Status
-          <FilterIcon />
+          <StatusFilterWrapper>
+            Status
+            <FilterButton onClick={toggleStatusFilter}>
+              <FilterIcon />
+            </FilterButton>
+            {showStatusFilter && (
+              <StatusDropdown>
+                {(['All', 'To Do', 'In Progress', 'Completed'] as StatusFilter[]).map((status) => (
+                  <StatusOption
+                    key={status}
+                    onClick={() => handleStatusFilterChange(status)}
+                    active={status === statusFilter}
+                  >
+                    {status}
+                  </StatusOption>
+                ))}
+              </StatusDropdown>
+            )}
+          </StatusFilterWrapper>
         </HeaderCell>
         <HeaderCell>Manage</HeaderCell>
       </Headers>
       <List>
-        {sortedTasks.map((task) => (
+        {filteredAndSortedTasks.map((task) => (
           <TaskItem key={task.id} item={task} />
         ))}
       </List>
@@ -105,7 +134,8 @@ export default TasksList
 const Container = styled.div({
   display: 'flex',
   flexDirection: 'column',
-  padding: '40px'
+  padding: '40px',
+  position: 'relative'
 })
 const Title = styled.h2({
   fontSize: 24,
@@ -145,3 +175,54 @@ const List = styled.ul({
   margin: 0,
   padding: 0
 })
+const StatusFilterWrapper = styled.div({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4
+})
+const FilterButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+
+  svg {
+    opacity: 0.3;
+    transition: opacity 0.2s;
+  }
+
+  &:hover svg {
+    opacity: 1;
+  }
+`
+const StatusDropdown = styled.div({
+  minWidth: 160,
+  position: 'absolute',
+  top: '100%',
+  right: 0,
+  backgroundColor: '#fff',
+  border: '1px solid #ccc',
+  borderRadius: 8,
+  zIndex: 10,
+  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16)'
+})
+const StatusOption = styled.div<{ active?: boolean }>`
+  padding: 8px 12px;
+  color: #000;
+  cursor: pointer;
+  background-color: ${(props) => (props.active ? '#f0f0f0' : '#fff')};
+  &:hover {
+    background-color: #ccc;
+  }
+  &:first-child {
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+  }
+  &:last-child {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+`

@@ -171,7 +171,7 @@ const Container = styled.div({
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'center',
-  background: '#fff',
+  backgroundColor: '#fff',
   border: '1px solid #ccc',
   borderRadius: 8,
   padding: '40px'
