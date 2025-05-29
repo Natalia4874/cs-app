@@ -8,7 +8,7 @@ import { fetchTasks } from '../store/slices/tasks'
 import { FilterIcon, SortAscIcon, SortDefaultIcon, SortDescIcon } from './Icons'
 import { TaskItem } from './TaskItem'
 
-type SortableField = 'title' | 'date' | 'status'
+type SortableField = 'date'
 type SortDirection = 'ascending' | 'descending'
 
 interface SortConfig {
@@ -73,10 +73,7 @@ const TasksList = () => {
     <Container>
       <Title>TasksList</Title>
       <Headers>
-        <HeaderCell onClick={() => requestSort('title')} active={sortConfig?.key === 'title'}>
-          Title
-          {renderSortIcon('title')}
-        </HeaderCell>
+        <HeaderCell>Title</HeaderCell>
         <HeaderCell>Description</HeaderCell>
         <HeaderCell onClick={() => requestSort('date')} active={sortConfig?.key === 'date'}>
           Created
