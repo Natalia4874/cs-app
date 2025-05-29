@@ -19,7 +19,6 @@ export const TaskItem = ({ item }: iTaskItemProps) => {
         <TaskCell>{item.status}</TaskCell>
         <TaskCell>
           <EditTask task={item} />
-          <Button>Delete</Button>
         </TaskCell>
       </Task>
     </>
@@ -41,19 +40,4 @@ const TaskCell = styled.div({
   gap: '16px',
   justifyContent: 'center',
   alignItems: 'center'
-})
-const Button = styled.button({
-  backgroundColor: '#ff719f',
-  transition: 'all 0.3s ease',
-  padding: '10px 20px',
-  border: 'none',
-  borderRadius: '4px',
-  color: 'white',
-  fontSize: '16px',
-  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16)',
-
-  '&:hover': {
-    backgroundColor: '#ff5a8a',
-    cursor: 'pointer'
-  }
 })

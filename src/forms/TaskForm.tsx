@@ -14,7 +14,7 @@ type iTaskFormProps = {
   initialData?: iTask
   onSuccess?: () => void
   onCancel?: () => void
-  onSubmit: (data: iTask) => void
+  onSubmit?: (data: iTask) => void
 }
 
 const schema = yup.object().shape({
@@ -92,9 +92,13 @@ const TaskForm = ({ initialData, onSuccess, onCancel, onSubmit }: iTaskFormProps
         return
       }
 
-      onSubmit(taskData)
+      onSubmit?.(taskData)
 
-      reset()
+      reset({
+        title: '',
+        description: '',
+        status: 'To Do'
+      })
 
       onSuccess?.()
     } catch (error) {
@@ -211,9 +215,9 @@ const Button = styled.button({
   borderRadius: '4px',
   color: 'white',
   fontSize: '16px',
-  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16);',
 
   '&:hover': {
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16)',
     backgroundColor: '#ff5a8a',
     cursor: 'pointer'
   }
